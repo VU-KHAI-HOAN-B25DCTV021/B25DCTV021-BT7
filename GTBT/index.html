@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giới Thiệu Bản Thân</title>
+  <meta name="description"
+    content="Trang giới thiệu bản thân của Vũ Khải Hoàn — sinh viên Học viện Bưu chính Viễn thông.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- React + Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* ── Hero Section ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .hero-greeting {
+      font-size: 56px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .hero-sub {
+      font-size: 20px;
+      color: #555;
+      text-align: center;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .hero-sub strong {
+      color: #111;
+    }
+
+    .scroll-hint {
+      margin-top: 48px;
+      font-size: 13px;
+      color: #aaa;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scroll-hint .arrow {
+      display: inline-block;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(5px);
+      }
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: 80px 24px;
+      max-width: 600px;
+      margin: 0 auto;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 24px;
+    }
+
+    /* ── School info ── */
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: #888;
+      font-weight: 500;
+    }
+
+    .info-value {
+      color: #111;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* ── Hobbies ── */
+    .hobby-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .hobby-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .hobby-item:last-child {
+      border-bottom: none;
+    }
+
+    .hobby-icon {
+      width: 40px;
+      height: 40px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── Skills ── */
+    .skill-item {
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .skill-item:last-child {
+      border-bottom: none;
+    }
+
+    .skill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .skill-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #222;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skill-level {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .skill-bar {
+      width: 100%;
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #111;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Projects ── */
+    .project-item {
+      padding: 20px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .project-item:last-child {
+      border-bottom: none;
+    }
+
+    .project-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .project-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      background: #f5f5f5;
+      padding: 4px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Social Links ── */
+    .link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-bottom: 1px solid #f0f0f0;
+      text-decoration: none;
+      color: #333;
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .link-item:last-child {
+      border-bottom: none;
+    }
+
+    .link-item:hover {
+      color: #000;
+    }
+
+    .link-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .link-left svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+      flex-shrink: 0;
+    }
+
+    .link-arrow {
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 13px;
+      color: #bbb;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .hero-greeting {
+        font-size: 36px;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+      }
+
+      .section-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    /* ══════════════════════════════════════════════
+       DỮ LIỆU — đặt trong mảng, truyền qua props
+    ══════════════════════════════════════════════ */
+
+    // Thông tin cá nhân
+    const personalInfo = [
+      { label: 'Họ và tên', value: 'Vũ Khải Hoàn' },
+      { label: 'Trường', value: 'Học viện Bưu chính Viễn thông' },
+      { label: 'Vị trí', value: 'Sinh viên' },
+    ];
+
+    // Sở thích
+    const hobbies = [
+      { icon: '🎮', name: 'Chơi game' },
+      { icon: '🎵', name: 'Nghe nhạc' },
+      { icon: '💻', name: 'Lập trình' },
+    ];
+
+    // Kỹ năng
+    const skills = [
+      { icon: '🖥️', name: 'Lập trình C/C++', level: 'Cơ bản', percent: 60 },
+      { icon: '🌐', name: 'HTML / CSS / JavaScript', level: 'Cơ bản', percent: 55 },
+      { icon: '🐍', name: 'Python', level: 'Cơ bản', percent: 50 },
+      { icon: '📟', name: 'Lập trình nhúng (Arduino)', level: 'Cơ bản', percent: 55 },
+      { icon: '📡', name: 'IoT — Kết nối cảm biến', level: 'Cơ bản', percent: 45 },
+      { icon: '🔌', name: 'Thiết kế mạch điện tử cơ bản', level: 'Cơ bản', percent: 40 },
+    ];
+
+    // Dự án
+    const projects = [
+      {
+        icon: '🌡️',
+        name: 'Hệ thống giám sát nhiệt độ — độ ẩm IoT',
+        desc: 'Sử dụng Arduino Uno kết hợp cảm biến DHT11 để đo nhiệt độ và độ ẩm môi trường. Dữ liệu được gửi lên ThingSpeak qua module ESP8266 WiFi, hiển thị biểu đồ realtime trên dashboard web. Hỗ trợ cảnh báo qua LED khi nhiệt độ vượt ngưỡng.',
+        tags: ['Arduino', 'ESP8266', 'DHT11', 'ThingSpeak', 'IoT'],
+      },
+      {
+        icon: '💡',
+        name: 'Điều khiển đèn LED thông minh qua Web',
+        desc: 'Xây dựng ứng dụng web đơn giản bằng HTML/CSS/JS giao tiếp với ESP32 qua WiFi để bật/tắt và điều chỉnh độ sáng đèn LED. Sử dụng giao thức HTTP RESTful API, có giao diện responsive thân thiện trên mobile.',
+        tags: ['ESP32', 'HTML/CSS/JS', 'REST API', 'WiFi', 'Nhúng'],
+      },
+    ];
+
+    // Liên kết mạng xã hội
+    const socialLinks = [
+      {
+        name: 'Facebook',
+        url: 'https://www.facebook.com/I.can.fix.her/',
+        svgPath: 'M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12z',
+      },
+      {
+        name: 'GitHub',
+        url: 'https://github.com/',
+        svgPath: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z',
+      },
+    ];
+
+    /* ══════════════════════════════════════════════
+       Component 1: Section — dùng children
+       Props: label, title, children
+    ══════════════════════════════════════════════ */
+    function Section({ label, title, children }) {
+      return (
+        <section className="section">
+          <p className="section-label">{label}</p>
+          <h2 className="section-title">{title}</h2>
+          {children}
+        </section>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 2: Hero — phần giới thiệu đầu trang
+       Props: name, school
+    ══════════════════════════════════════════════ */
+    function Hero({ name, school }) {
+      return (
+        <section className="hero">
+          <h1 className="hero-greeting">Xin chào! 👋</h1>
+          <p className="hero-sub">
+            Mình là <strong>{name}</strong>, sinh viên tại{' '}
+            <strong>{school}</strong>.
+            Rất vui được làm quen với mọi người.
+          </p>
+          <div className="scroll-hint">
+            <span className="arrow">↓</span> Kéo xuống để xem thêm
+          </div>
+        </section>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 3: InfoTable — bảng thông tin cá nhân
+       Props: data (mảng các { label, value })
+    ══════════════════════════════════════════════ */
+    function InfoTable({ data }) {
+      return (
+        <div>
+          {data.map((item, idx) => (
+            <div className="info-row" key={idx}>
+              <span className="info-label">{item.label}</span>
+              <span className="info-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 4: HobbyList — danh sách sở thích
+       Props: items (mảng các { icon, name })
+    ══════════════════════════════════════════════ */
+    function HobbyList({ items }) {
+      return (
+        <ul className="hobby-list">
+          {items.map((hobby, idx) => (
+            <li className="hobby-item" key={idx}>
+              <span className="hobby-icon">{hobby.icon}</span>
+              <span>{hobby.name}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 5: SocialLinks — liên kết mạng xã hội
+       Props: links (mảng các { name, url, svgPath })
+    ══════════════════════════════════════════════ */
+    function SocialLinks({ links }) {
+      return (
+        <div className="link-list">
+          {links.map((link, idx) => (
+            <a href={link.url} target="_blank" rel="noopener noreferrer"
+               className="link-item" key={idx}>
+              <span className="link-left">
+                <svg viewBox="0 0 24 24">
+                  <path d={link.svgPath} />
+                </svg>
+                {link.name}
+              </span>
+              <span className="link-arrow">→</span>
+            </a>
+          ))}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 6: SkillList — danh sách kỹ năng
+       Props: items (mảng các { icon, name, level, percent })
+    ══════════════════════════════════════════════ */
+    function SkillList({ items }) {
+      return (
+        <div>
+          {items.map((skill, idx) => (
+            <div className="skill-item" key={idx}>
+              <div className="skill-header">
+                <span className="skill-name">{skill.icon} {skill.name}</span>
+                <span className="skill-level">{skill.level}</span>
+              </div>
+              <div className="skill-bar">
+                <div className="skill-bar-fill" style={{ width: `${skill.percent}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component 7: ProjectList — danh sách dự án
+       Props: items (mảng các { icon, name, desc, tags })
+    ══════════════════════════════════════════════ */
+    function ProjectList({ items }) {
+      return (
+        <div>
+          {items.map((project, idx) => (
+            <div className="project-item" key={idx}>
+              <div className="project-name">{project.icon} {project.name}</div>
+              <p className="project-desc">{project.desc}</p>
+              <div className="project-tags">
+                {project.tags.map((tag, i) => (
+                  <span className="project-tag" key={i}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════════════════
+       Component App — tổng hợp toàn bộ trang CV
+    ══════════════════════════════════════════════ */
+    function App() {
+      return (
+        <div>
+          {/* Hero */}
+          <Hero name="Vũ Khải Hoàn" school="Học viện Bưu chính Viễn thông" />
+
+          {/* Thông tin cá nhân — Section dùng children */}
+          <Section label="01 — Thông tin" title="Thông tin cá nhân">
+            <InfoTable data={personalInfo} />
+          </Section>
+
+          {/* Sở thích — Section dùng children */}
+          <Section label="02 — Sở thích" title="Những điều mình thích">
+            <HobbyList items={hobbies} />
+          </Section>
+
+          {/* Kỹ năng — Section dùng children */}
+          <Section label="03 — Kỹ năng" title="Kỹ năng của mình">
+            <SkillList items={skills} />
+          </Section>
+
+          {/* Dự án — Section dùng children */}
+          <Section label="04 — Dự án" title="Dự án đã thực hiện">
+            <ProjectList items={projects} />
+          </Section>
+
+          {/* Liên kết — Section dùng children */}
+          <Section label="05 — Liên kết" title="Kết nối với mình">
+            <SocialLinks links={socialLinks} />
+          </Section>
+
+          <footer className="footer">© 2026 Vũ Khải Hoàn</footer>
+        </div>
+      );
+    }
+
+    /* ── Render ── */
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <meta name="description" content="Ứng dụng máy tính đơn giản — tính toán cơ bản.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- React + Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 24px;
+    }
+
+    /* ── Calculator Shell ── */
+    .calculator {
+      width: 320px;
+      border: 1px solid #e0e0e0;
+    }
+
+    /* ── Header ── */
+    .calc-header {
+      text-align: center;
+      padding: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #999;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* ── Display ── */
+    .display {
+      background: #fafafa;
+      padding: 24px 20px;
+      text-align: right;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .display-expression {
+      font-size: 14px;
+      color: #999;
+      min-height: 20px;
+      word-break: break-all;
+      margin-bottom: 6px;
+    }
+
+    .display-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #111;
+      word-break: break-all;
+      line-height: 1.1;
+    }
+
+    /* ── Button Grid ── */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .btn {
+      height: 60px;
+      border: none;
+      border-right: 1px solid rgba(255,255,255,0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      color: #333;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:nth-child(4n) {
+      border-right: none;
+    }
+
+    /* Last row — remove bottom border */
+    .btn:nth-last-child(-n+4) {
+      border-bottom: none;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Number buttons — xanh lá */
+    .btn-num {
+      background: #2ecc71;
+      color: #fff;
+    }
+
+    .btn-num:hover {
+      background: #27ae60;
+    }
+
+    .btn-num:active {
+      background: #1e8449;
+    }
+
+    /* Operator buttons — cam */
+    .btn-op {
+      background: #f39c12;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .btn-op:hover {
+      background: #e67e22;
+    }
+
+    .btn-op:active {
+      background: #d35400;
+    }
+
+    /* Utility buttons (C, ⌫, %) — đỏ */
+    .btn-util {
+      background: #e74c3c;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .btn-util:hover {
+      background: #c0392b;
+    }
+
+    .btn-util:active {
+      background: #a93226;
+    }
+
+    /* Equals button — xanh đậm */
+    .btn-eq {
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .btn-eq:hover {
+      background: #16213e;
+    }
+
+    .btn-eq:active {
+      background: #0f3460;
+    }
+
+    /* Zero spans 2 columns */
+    .btn-zero {
+      grid-column: span 2;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    /* ─────────────────────────────────────────────
+       Component Display — hiển thị kết quả
+       Props: expression (biểu thức), value (giá trị hiện tại)
+    ───────────────────────────────────────────── */
+    function Display({ expression, value }) {
+      return (
+        <div className="display" id="display">
+          <div className="display-expression" id="expression">
+            {expression}
+          </div>
+          <div className="display-value" id="value">
+            {value}
+          </div>
+        </div>
+      );
+    }
+
+    /* ─────────────────────────────────────────────
+       Component Button — nút bấm
+       Props: label (nhãn hiển thị), color (loại màu: num, op, util, eq),
+              onClick (hàm xử lý), className (thêm class)
+    ───────────────────────────────────────────── */
+    function Button({ label, color, onClick, className = '' }) {
+      const colorClass = {
+        num: 'btn-num',
+        op: 'btn-op',
+        util: 'btn-util',
+        eq: 'btn-eq',
+      };
+
+      return (
+        <button
+          className={`btn ${colorClass[color] || 'btn-num'} ${className}`}
+          onClick={onClick}
+        >
+          {label}
+        </button>
+      );
+    }
+
+    /* ─────────────────────────────────────────────
+       Component Calculator — chứa toàn bộ logic
+       Sử dụng State để lưu trạng thái hiện tại
+       Thực hiện: +, −, ×, ÷, C, =
+    ───────────────────────────────────────────── */
+    function Calculator() {
+      const [current, setCurrent] = useState('0');
+      const [previous, setPrevious] = useState('');
+      const [operator, setOperator] = useState('');
+      const [justEval, setJustEval] = useState(false);
+      const [expressionText, setExpressionText] = useState('');
+
+      // Tính biểu thức hiển thị
+      const displayExpression = previous && operator ? `${previous} ${operator}` : expressionText;
+
+      // Nhập số
+      const inputNum = useCallback((n) => {
+        setCurrent(prev => {
+          let cur = prev;
+          if (justEval) { cur = '0'; setJustEval(false); setExpressionText(''); }
+          if (cur === '0' && n !== '.') return n;
+          if (cur.length < 15) return cur + n;
+          return cur;
+        });
+      }, [justEval]);
+
+      // Nhập dấu chấm
+      const inputDot = useCallback(() => {
+        setCurrent(prev => {
+          if (justEval) { setJustEval(false); setExpressionText(''); return '0.'; }
+          if (!prev.includes('.')) return prev + '.';
+          return prev;
+        });
+      }, [justEval]);
+
+      // Chọn phép toán
+      const inputOp = useCallback((o) => {
+        setCurrent(prev => {
+          setPrevious(prev);
+          setOperator(o);
+          setJustEval(false);
+          setExpressionText('');
+          return '0';
+        });
+      }, []);
+
+      // Tính kết quả
+      const evaluate = useCallback(() => {
+        if (!operator || !previous) return;
+
+        const a = parseFloat(previous);
+        const b = parseFloat(current);
+        let result;
+
+        switch (operator) {
+          case '+': result = a + b; break;
+          case '−': result = a - b; break;
+          case '×': result = a * b; break;
+          case '÷': result = b !== 0 ? a / b : 'Lỗi'; break;
+          default: return;
+        }
+
+        const expr = `${previous} ${operator} ${current} =`;
+        setExpressionText(expr);
+
+        if (result === 'Lỗi') {
+          setCurrent('Lỗi');
+        } else {
+          setCurrent(parseFloat(result.toFixed(10)).toString());
+        }
+
+        setPrevious('');
+        setOperator('');
+        setJustEval(true);
+      }, [operator, previous, current]);
+
+      // Xóa tất cả
+      const clear = useCallback(() => {
+        setCurrent('0');
+        setPrevious('');
+        setOperator('');
+        setJustEval(false);
+        setExpressionText('');
+      }, []);
+
+      // Xóa ký tự cuối
+      const del = useCallback(() => {
+        if (justEval) return;
+        setCurrent(prev => prev.length > 1 ? prev.slice(0, -1) : '0');
+      }, [justEval]);
+
+      // Phần trăm
+      const percent = useCallback(() => {
+        setCurrent(prev => (parseFloat(prev) / 100).toString());
+      }, []);
+
+      // Hỗ trợ bàn phím
+      useEffect(() => {
+        const handleKey = (e) => {
+          if (e.key >= '0' && e.key <= '9') inputNum(e.key);
+          else if (e.key === '.') inputDot();
+          else if (e.key === '+') inputOp('+');
+          else if (e.key === '-') inputOp('−');
+          else if (e.key === '*') inputOp('×');
+          else if (e.key === '/') { e.preventDefault(); inputOp('÷'); }
+          else if (e.key === '%') percent();
+          else if (e.key === 'Enter' || e.key === '=') evaluate();
+          else if (e.key === 'Backspace') del();
+          else if (e.key === 'Escape' || e.key === 'Delete') clear();
+        };
+        document.addEventListener('keydown', handleKey);
+        return () => document.removeEventListener('keydown', handleKey);
+      }, [inputNum, inputDot, inputOp, percent, evaluate, del, clear]);
+
+      return (
+        <div className="calculator">
+          <div className="calc-header">Calculator</div>
+
+          {/* Component Display hiển thị kết quả */}
+          <Display expression={displayExpression} value={current} />
+
+          {/* Các Component Button nhận props nhãn và màu */}
+          <div className="buttons">
+            <Button label="C"  color="util" onClick={clear}            />
+            <Button label="⌫" color="util" onClick={del}              />
+            <Button label="%"  color="util" onClick={percent}          />
+            <Button label="÷"  color="op"   onClick={() => inputOp('÷')} />
+
+            <Button label="7" color="num" onClick={() => inputNum('7')} />
+            <Button label="8" color="num" onClick={() => inputNum('8')} />
+            <Button label="9" color="num" onClick={() => inputNum('9')} />
+            <Button label="×" color="op"  onClick={() => inputOp('×')} />
+
+            <Button label="4" color="num" onClick={() => inputNum('4')} />
+            <Button label="5" color="num" onClick={() => inputNum('5')} />
+            <Button label="6" color="num" onClick={() => inputNum('6')} />
+            <Button label="−" color="op"  onClick={() => inputOp('−')} />
+
+            <Button label="1" color="num" onClick={() => inputNum('1')} />
+            <Button label="2" color="num" onClick={() => inputNum('2')} />
+            <Button label="3" color="num" onClick={() => inputNum('3')} />
+            <Button label="+" color="op"  onClick={() => inputOp('+')} />
+
+            <Button label="0" color="num" onClick={() => inputNum('0')} className="btn-zero" />
+            <Button label="." color="num" onClick={inputDot}            />
+            <Button label="=" color="eq"  onClick={evaluate}           />
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Render ── */
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Calculator />);
+  </script>
+
+</body>
+
+</html>
